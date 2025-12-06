@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Queue Simulation</title>
+<style>
+    body {
+        font-family: Arial;
+        background: #f4f6f9;
+        text-align: center;
+        padding: 20px;
+    }
+
+    h1 {
+        color: #333;
+    }
+
+    #queue-container {
+        margin-top: 40px;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .box {
+        width: 60px;
+        height: 60px;
+        border: 2px solid #333;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        background: white;
+        position: relative;
+    }
+
+    .pointer {
+        position: absolute;
+        top: -20px;
+        font-size: 14px;
+        color: red;
+        font-weight: bold;
+    }
+
+    .buttons {
+        margin-top: 30px;
+    }
+
+    button {
+        padding: 10px 15px;
+        margin: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        border: none;
+        background: #007bff;
+        color: white;
+    }
+
+    button:hover {
+        background: #0056b3;
+    }
+
+    input {
+        padding: 8px;
+        font-size: 16px;
+        width: 120px;
+    }
+
+    .msg {
+        margin-top: 20px;
+        font-weight: bold;
+        color: green;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>QUEUE SIMULATION (UI Demo)</h1>
+<p>Max Size: 5</p>
+
+<div>
+    <input type="number" id="valueInput" placeholder="Enter value">
+    <button onclick="enqueue()">Enqueue</button>
+    <button onclick="dequeue()">Dequeue</button>
+    <button onclick="peek()">Peek</button>
+    <button onclick="visualize()">Visualize</button>
+</div>
+
+<div id="queue-container"></div>
+
+<p id="message" class="msg"></p>
+
+<script>
+let MAX = 5;
+let queue = [];
+let front = -1, rear = -1;
+
+function showMessage(msg, error = false) {
+    let m = document.getElementById("message");
+    m.style.color = error ? "red" : "green";
+    m.innerText = msg;
+}
+
+function drawQueue() {
+    let div = document.getElementById("queue-container");
+    div.innerHTML = "";
+
+    for (let i = 0; i < MAX; i++) {
+        let box = document.createElement("div");
+        box.className = "box";
+
+        if (i >= front && i <= rear && front !== -1) {
+            box.innerText = queue[i];
+        }
+
+        if (i === front && front !== -1) {
+            let p = document.createElement("div");
+            p.className = "pointer";
+            p.innerText = "F";
+            box.appendChild(p);
+        }
+
+        if (i === rear && rear !== -1) {
+            let p = document.createElement("div");
+            p.className = "pointer";
+            p.style.color = "blue";
+            p.style.top = "65px";
+            p.innerText = "R";
+            box.appendChild(p);
+        }
+
+        div.appendChild(box);
+    }
+}
+
+function enqueue() {
+    let value = document.getElementById("valueInput").value;
+    if (value === "") return showMessage("Enter a value first!", true);
+
+    if (rear === MAX - 1) {
+        showMessage("Queue Overflow! Cannot insert.", true);
+        return;
+    }
+
+    if (front === -1) front = 0;
+    rear++;
+    queue[rear] = Number(value);
+
+    showMessage(`Inserted ${value}`);
+    drawQueue();
+}
+
+function dequeue() {
+    if (front === -1 || front > rear) {
+        showMessage("Queue Underflow! Nothing to delete.", true);
+        return;
+    }
+
+    let deleted = queue[front];
+    showMessage(`Deleted ${deleted}`);
+
+    front++;
+
+    if (front > rear) {
+        front = rear = -1;
+    }
+    drawQueue();
+}
+
+function peek() {
+    if (front === -1) {
+        showMessage("Queue is empty.", true);
+        return;
+    }
+    showMessage(`Front element: ${queue[front]}`);
+}
+
+function visualize() {
+    drawQueue();
+    showMessage("Visualization updated.");
+}
+
+// Initial display
+drawQueue();
+</script>
+
+</body>
+</html>
